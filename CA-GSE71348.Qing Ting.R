@@ -87,7 +87,7 @@ contrasts_matrix <- makeContrasts(Msgn1_in_Chir=E14D4.Chir - E14D0.Control,
                                   Pax3_in_Chir=CK35D6.Rspo3 - E14D0.Control,
                                   interaction=(E14D4.Rspo3 - E14D4.Chir) - (CK35D6.Rspo3 - CK35D6.Chir),
                                   levels=design)
-contrasts_matrix
+ contrasts_matrix
 gse71348_fit <- lmFit(gse71348_rma,design)
 gse71348_fit2 <- contrasts.fit(gse71348_fit,contrasts=contrasts_matrix)
 gse71348_fit2 <- eBayes(gse71348_fit2)
@@ -98,23 +98,23 @@ ps <- rownames(topTable(fitted.ebayes))
 ps
 if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
-BiocManager::install("pd.mogene.2.0.st")
-library(pd.mogene.2.0.st)
-list(pd.mogene.2.0.st)
-
-gpl1261<-getGEO('GPL1261',destdir =".")
-colnames(Table(gpl1261))
-Ano <- head((Table(gpl1261)[,c(1,10,11,12)]))
-merge(ID,Ano,by(by="ID"),all.x=T) #?error
+BiocManager::install('mouse4302.db')
+library(mouse4302.db)
+list(mouse4302.db)
+columns(mouse4302.db)
+keytypes(mouse4302.db)
+head(keys(mouse4302.db,keytype="PROBEID"))
+AnnotationDbi::select(mouse4302.db,ps,c("SYMBOL","ENTREZID","GENENAME"),keytype="PROBEID")
 
 #Volcano plots
 volcanoplot(fitted.ebayes,coef=2)
-  interesting_genes <- topTable(fitted.ebayes,number=Inf,p.value = 0.05,lfc=2)
+interesting_genes <- topTable(fitted.ebayes,coef=2,number=Inf,p.value = 0.05,lfc=2)
 volcanoplot(fitted.ebayes, coef=2, main=sprintf("%d features pass our cutoffs",nrow(interesting_genes)))
-points(interesting_genes[['logFC']],-log10(interesting_genes[['P.Value']]),col='red') #error
+points(interesting_genes[['logFC']],-log10(interesting_genes[['P.Value']]),col='red' )
 
 #Heatmaps
 eset_of_interest <- gse71348_rma[rownames(interesting_genes),]
+eset_of_interest
 heatmap(exprs(eset_of_interest))
 library(RColorBrewer)
 heatmap(exprs(eset_of_interest),
